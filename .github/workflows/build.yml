@@ -1,0 +1,49 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug and release APKs
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug assembleRelease
+
+      - name: Rename APKs
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk out/DontScroll.apk
+          cp app/build/outputs/apk/debug/app-debug.apk out/DontScroll-debug.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DontScroll-apk
+          path: out/*.apk
+
+      - name: Publish as "latest" release (download from your phone)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: DontScroll test build
+          prerelease: true
+          files: out/DontScroll.apk
+          body: |
+            Test build from ${{ github.sha }}.
+            On your phone: download DontScroll.apk, open it, allow "Install unknown apps" if asked.
