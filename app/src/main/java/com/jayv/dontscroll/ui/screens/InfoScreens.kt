@@ -65,7 +65,7 @@ fun ReliabilityScreen(onBack: () -> Unit) {
         Panel(padding = 18.dp) {
             Steps(
                 "Tap the button below.",
-                "Open Installed apps (Samsung) or Downloaded apps, then DontScroll.",
+                "Open Installed apps (Samsung) or Downloaded apps, then SwipeStop.",
                 "Switch it on and tap Allow.",
             )
             Spacer(Modifier.height(12.dp))
@@ -82,7 +82,7 @@ fun ReliabilityScreen(onBack: () -> Unit) {
             Steps(
                 "Tap the button below to open App info.",
                 "Tap ⋮ (top right) and choose \"Allow restricted settings\". Confirm with your PIN or fingerprint.",
-                "Go back and switch DontScroll on in Accessibility.",
+                "Go back and switch SwipeStop on in Accessibility.",
             )
             Spacer(Modifier.height(12.dp))
             SecondaryButton("Open App info") { Perms.openAppInfo(ctx) }
@@ -95,13 +95,13 @@ fun ReliabilityScreen(onBack: () -> Unit) {
                 Spacer(Modifier.height(6.dp))
                 Steps(
                     "App info → Battery → choose Unrestricted.",
-                    "Settings → Battery → Background usage limits → Never auto sleeping apps → add DontScroll.",
-                    "Do not swipe DontScroll away with \"Close all\" in recent apps; if you do, it may need switching on again.",
+                    "Settings → Battery → Background usage limits → Never auto sleeping apps → add SwipeStop.",
+                    "Do not swipe SwipeStop away with \"Close all\" in recent apps; if you do, it may need switching on again.",
                 )
             } else {
                 Steps(
                     "App info → Battery → choose Unrestricted (or \"Don't optimise\").",
-                    "On Xiaomi, Vivo, Oppo and Realme also turn on Autostart for DontScroll.",
+                    "On Xiaomi, Vivo, Oppo and Realme also turn on Autostart for SwipeStop.",
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -111,7 +111,7 @@ fun ReliabilityScreen(onBack: () -> Unit) {
         }
         Spacer(Modifier.height(10.dp))
         Text(
-            "If counting stops after an update: Accessibility → DontScroll → switch off and on again.",
+            "If counting stops after an update: Accessibility → SwipeStop → switch off and on again.",
             fontSize = 13.sp, color = C.TextLo,
         )
         Spacer(Modifier.height(28.dp))
@@ -188,7 +188,7 @@ private fun KV(k: String, v: String) {
 
 private fun copy(ctx: Context, text: String) {
     val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    cm.setPrimaryClip(ClipData.newPlainText("DontScroll log", text))
+    cm.setPrimaryClip(ClipData.newPlainText("SwipeStop log", text))
     Toast.makeText(ctx, "Log copied", Toast.LENGTH_SHORT).show()
 }
 
@@ -202,7 +202,7 @@ fun AboutScreen(onBack: () -> Unit) {
     ) {
         BackHeader("Privacy & how it works", onBack)
         Panel(padding = 18.dp) {
-            Para("What DontScroll does", "It counts the reels and shorts you watch on Instagram, YouTube, Snapchat and Facebook, measures the time, and stops you when you reach the limits you set.")
+            Para("What SwipeStop does", "It counts the reels and shorts you watch on Instagram, YouTube, Snapchat and Facebook, measures the time, and stops you when you reach the limits you set.")
             Para("How it sees reels", "Through Android's Accessibility service. It looks at the layout of those four apps (view IDs, sizes, and for Facebook the labels of the like/comment/share buttons) to know when a Reels or Shorts player is open, and counts each swipe.")
             Para("What it never does", "It does not read your messages, does not record your screen, has no account and no internet permission. Nothing leaves your phone.")
             Para("Where your data lives", "In a small database on this phone. Export it as CSV or delete it any time in Settings. Uninstalling removes it.")

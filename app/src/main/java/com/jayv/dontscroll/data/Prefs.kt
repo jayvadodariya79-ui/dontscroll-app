@@ -85,7 +85,7 @@ object Prefs {
         get() = bool("onboarded", false)
         set(v) = putBool("onboarded", v)
 
-    /** Daily reels budget across all apps. Also the Battle budget. */
+    /** Daily reels budget across all apps. Also the daily goal on the Goals tab. */
     var reelLimit: Int
         get() = int("reel_limit", 50)
         set(v) = putInt("reel_limit", v.coerceIn(1, 1000))

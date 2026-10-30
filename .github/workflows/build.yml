@@ -29,21 +29,21 @@ jobs:
       - name: Rename APKs
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/release/app-release.apk out/DontScroll.apk
-          cp app/build/outputs/apk/debug/app-debug.apk out/DontScroll-debug.apk
+          cp app/build/outputs/apk/release/app-release.apk out/SwipeStop.apk
+          cp app/build/outputs/apk/debug/app-debug.apk out/SwipeStop-debug.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: DontScroll-apk
+          name: SwipeStop-apk
           path: out/*.apk
 
       - name: Publish as "latest" release (download from your phone)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: DontScroll test build
+          name: SwipeStop test build
           prerelease: true
-          files: out/DontScroll.apk
+          files: out/SwipeStop.apk
           body: |
             Test build from ${{ github.sha }}.
-            On your phone: download DontScroll.apk, open it, allow "Install unknown apps" if asked.
+            On your phone: download SwipeStop.apk, open it, allow "Install unknown apps" if asked.

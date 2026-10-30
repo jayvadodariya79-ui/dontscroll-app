@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  DontScroll is not an accessibility tool (isAccessibilityTool=false), so the app shows
+  SwipeStop is not an accessibility tool (isAccessibilityTool=false), so the app shows
   its own disclosure and consent screen before sending the user here.
   View IDs are used to recognise the Reels / Shorts / Spotlight players.
 -->

@@ -1,4 +1,4 @@
-# DontScroll (working name)
+# SwipeStop
 
 Android app that counts the Reels and Shorts you swipe on **Instagram, YouTube, Snapchat and Facebook**, shows the time you spend there, and stops you at your limit. Free, no login, no internet permission; everything is stored on the phone.
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DontScroll</string>
-    <string name="accessibility_label">DontScroll reel tracker</string>
-    <string name="accessibility_description">DontScroll uses this to notice when Instagram Reels, YouTube Shorts, Snapchat Spotlight or Facebook Reels are on your screen, count each reel you swipe, measure the time you spend there, and show your limit screen when you reach a limit you set. It reads only screen layout and view IDs of those four apps. It does not read your messages, does not collect personal data, and nothing leaves your phone.</string>
-    <string name="widget_label">DontScroll today</string>
-    <string name="widget_description">Reels and time today, with your brain meter</string>
+    <string name="app_name">SwipeStop</string>
+    <string name="accessibility_label">SwipeStop reel tracker</string>
+    <string name="accessibility_description">SwipeStop uses this to notice when Instagram Reels, YouTube Shorts, Snapchat Spotlight or Facebook Reels are on your screen, count each reel you swipe, measure the time you spend there, and show your limit screen when you reach a limit you set. It reads only screen layout and view IDs of those four apps. It does not read your messages, does not collect personal data, and nothing leaves your phone.</string>
+    <string name="widget_label">SwipeStop today</string>
+    <string name="widget_description">Reels and time today, with budget left</string>
 </resources>

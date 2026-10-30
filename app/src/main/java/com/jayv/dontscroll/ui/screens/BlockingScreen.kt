@@ -74,7 +74,7 @@ fun BlockingScreen(onBack: () -> Unit, onOpen: (Route) -> Unit) {
                 onDone = { Prefs.timeLimitMin = it; Repo.syncTodayBudget() },
             )
             Spacer(Modifier.height(6.dp))
-            Text("Both limits count all four apps together. Your reel limit is also your Battle budget.", fontSize = 13.sp, color = C.TextLo)
+            Text("Both limits count all four apps together. Your reel limit is also your daily goal.", fontSize = 13.sp, color = C.TextLo)
         }
 
         SectionTitle("When I hit a limit")

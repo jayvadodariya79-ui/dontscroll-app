@@ -17,7 +17,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.jayv.dontscroll.ui.components.BrainPainter
+import com.jayv.dontscroll.ui.components.MeterPainter
 
 /**
  * Windows DontScroll draws over Instagram/YouTube/Snapchat/Facebook, using the
@@ -86,7 +86,7 @@ class Overlays(private val ctx: Context) {
         }
         val t = label(13f, Color.WHITE, bold = true).apply {
             text = textValue
-            background = pill(Color.argb(215, 22, 21, 19), 18f)
+            background = pill(Color.argb(225, 30, 23, 51), 18f)
             setPadding(dp(14f), dp(7f), dp(14f), dp(7f))
         }
         val p = baseParams(touchable = false, full = false).apply {
@@ -102,9 +102,9 @@ class Overlays(private val ctx: Context) {
 
     fun showBanner(message: String, millis: Long = 4500) {
         removeBanner()
-        val t = label(14f, Color.rgb(42, 26, 20), bold = true).apply {
+        val t = label(14f, Color.rgb(26, 16, 48), bold = true).apply {
             text = message
-            background = pill(Color.rgb(255, 176, 103), 16f)
+            background = pill(Color.rgb(167, 139, 250), 16f)
             setPadding(dp(18f), dp(12f), dp(18f), dp(12f))
             maxWidth = (ctx.resources.displayMetrics.widthPixels * 0.9f).toInt()
         }
@@ -124,21 +124,18 @@ class Overlays(private val ctx: Context) {
         safeRemove(banner); banner = null
     }
 
-    // ---------------- Brain view for overlays ----------------
+    // ---------------- Meter view for overlays ----------------
 
-    private class BrainView(ctx: Context, private val health: Int) : View(ctx) {
-        private val start = System.currentTimeMillis()
+    private class MeterView(ctx: Context, private val left: Int) : View(ctx) {
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
-            val phase = ((System.currentTimeMillis() - start) % 2400L) / 2400f
-            BrainPainter.draw(canvas, width.toFloat(), height.toFloat(), health, phase)
-            postInvalidateDelayed(40)
+            MeterPainter.draw(canvas, width.toFloat(), height.toFloat(), left)
         }
     }
 
-    private fun button(caption: String, primary: Boolean): TextView = label(16f, if (primary) Color.rgb(42, 26, 20) else Color.WHITE, bold = true).apply {
+    private fun button(caption: String, primary: Boolean): TextView = label(16f, if (primary) Color.rgb(26, 16, 48) else Color.WHITE, bold = true).apply {
         text = caption
-        background = if (primary) pill(Color.rgb(255, 176, 103), 28f) else pill(Color.argb(40, 255, 255, 255), 28f)
+        background = if (primary) pill(Color.rgb(167, 139, 250), 28f) else pill(Color.argb(40, 255, 255, 255), 28f)
         setPadding(dp(20f), dp(14f), dp(20f), dp(14f))
         isClickable = true
         isFocusable = false
@@ -151,7 +148,7 @@ class Overlays(private val ctx: Context) {
     }
 
     private fun full(content: View): FrameLayout = FrameLayout(ctx).apply {
-        setBackgroundColor(Color.argb(245, 10, 10, 9))
+        setBackgroundColor(Color.argb(248, 19, 14, 34))
         isClickable = true // swallow touches so the feed behind cannot be used
         addView(
             content,
@@ -188,7 +185,7 @@ class Overlays(private val ctx: Context) {
         title: String,
         message: String,
         stats: String,
-        health: Int,
+        left: Int,
         snoozeLabel: String?,
         onLeave: () -> Unit,
         onSnooze: () -> Unit,
@@ -198,13 +195,13 @@ class Overlays(private val ctx: Context) {
         hidePause()
         hideBubble()
         val col = column()
-        col.addView(BrainView(ctx, health), LinearLayout.LayoutParams(dp(170f), dp(170f)))
+        col.addView(MeterView(ctx, left), LinearLayout.LayoutParams(dp(150f), dp(150f)))
         col.addView(spacer(8f))
         col.addView(fullWidth(label(26f, Color.WHITE, bold = true).apply { text = title }))
         col.addView(spacer(10f))
-        col.addView(fullWidth(label(16f, Color.rgb(200, 195, 186)).apply { text = message }))
+        col.addView(fullWidth(label(16f, Color.rgb(196, 189, 222)).apply { text = message }))
         col.addView(spacer(8f))
-        col.addView(fullWidth(label(14f, Color.rgb(255, 176, 103), bold = true).apply { text = stats }))
+        col.addView(fullWidth(label(14f, Color.rgb(167, 139, 250), bold = true).apply { text = stats }))
         col.addView(spacer(32f))
         val leave = button("Leave now", primary = true)
         leave.setOnClickListener { onLeave() }
@@ -255,15 +252,15 @@ class Overlays(private val ctx: Context) {
         hidePause()
         hideBubble()
         val col = column()
-        col.addView(BrainView(ctx, 100), LinearLayout.LayoutParams(dp(150f), dp(150f)))
+        col.addView(MeterView(ctx, 100), LinearLayout.LayoutParams(dp(130f), dp(130f)))
         col.addView(spacer(8f))
         col.addView(fullWidth(label(26f, Color.WHITE, bold = true).apply { text = "Take a breath" }))
         col.addView(spacer(10f))
-        col.addView(fullWidth(label(16f, Color.rgb(200, 195, 186)).apply {
+        col.addView(fullWidth(label(16f, Color.rgb(196, 189, 222)).apply {
             text = "You're opening $appFeature. Do you really want to scroll right now?"
         }))
         col.addView(spacer(28f))
-        val counter = label(44f, Color.rgb(255, 176, 103), bold = true).apply { text = seconds.toString() }
+        val counter = label(44f, Color.rgb(167, 139, 250), bold = true).apply { text = seconds.toString() }
         col.addView(fullWidth(counter))
         col.addView(spacer(24f))
         val leave = button("I'll skip it", primary = true)

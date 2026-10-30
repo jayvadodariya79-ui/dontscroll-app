@@ -31,16 +31,16 @@ import androidx.compose.ui.unit.sp
 import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.ui.components.NavGlyph
 import com.jayv.dontscroll.ui.screens.AboutScreen
-import com.jayv.dontscroll.ui.screens.BattleScreen
+import com.jayv.dontscroll.ui.screens.GoalsScreen
 import com.jayv.dontscroll.ui.screens.BlockingScreen
 import com.jayv.dontscroll.ui.screens.DebugScreen
 import com.jayv.dontscroll.ui.screens.OnboardingScreen
-import com.jayv.dontscroll.ui.screens.ProgressScreen
+import com.jayv.dontscroll.ui.screens.InsightsScreen
 import com.jayv.dontscroll.ui.screens.ReliabilityScreen
 import com.jayv.dontscroll.ui.screens.Route
 import com.jayv.dontscroll.ui.screens.ScheduleScreen
 import com.jayv.dontscroll.ui.screens.SettingsScreen
-import com.jayv.dontscroll.ui.screens.YouScreen
+import com.jayv.dontscroll.ui.screens.TodayScreen
 import com.jayv.dontscroll.ui.theme.C
 import com.jayv.dontscroll.ui.theme.DontScrollTheme
 
@@ -105,13 +105,13 @@ private fun MainShell() {
         containerColor = C.Bg,
         bottomBar = {
             NavigationBar(containerColor = C.Bg, tonalElevation = androidx.compose.ui.unit.Dp(0f)) {
-                val items = listOf("You", "Battle", "Progress")
+                val items = listOf("Today", "Goals", "Insights")
                 items.forEachIndexed { i, label ->
                     val selected = tab == i
                     NavigationBarItem(
                         selected = selected,
                         onClick = { tab = i },
-                        icon = { NavGlyph(i, if (selected) C.AccentLight else C.TextLo) },
+                        icon = { NavGlyph(i, if (selected) C.Accent else C.TextLo) },
                         label = {
                             Text(
                                 label,
@@ -120,7 +120,7 @@ private fun MainShell() {
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedTextColor = C.AccentLight,
+                            selectedTextColor = C.Accent,
                             unselectedTextColor = C.TextLo,
                             indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                         ),
@@ -131,9 +131,9 @@ private fun MainShell() {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (tab) {
-                0 -> YouScreen(onOpen = open)
-                1 -> BattleScreen()
-                else -> ProgressScreen(onOpen = open)
+                0 -> TodayScreen(onOpen = open)
+                1 -> GoalsScreen()
+                else -> InsightsScreen(onOpen = open)
             }
         }
     }

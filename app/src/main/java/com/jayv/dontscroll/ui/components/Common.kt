@@ -1,12 +1,6 @@
 package com.jayv.dontscroll.ui.components
 
 import android.graphics.drawable.Drawable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,9 +39,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -104,31 +100,11 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+/** SwipeStop meter: a phone that fills as swipes are used. [left] is percent of today's budget left. */
 @Composable
-private fun rememberPhase(durationMs: Int = 2400): Float {
-    val t = rememberInfiniteTransition(label = "phase")
-    val v by t.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(durationMs, easing = LinearEasing), RepeatMode.Restart),
-        label = "phase",
-    )
-    return v
-}
-
-@Composable
-fun BrainArt(health: Int, modifier: Modifier = Modifier, animate: Boolean = true) {
-    val phase = if (animate) rememberPhase() else 0f
+fun MeterArt(left: Int, modifier: Modifier = Modifier) {
     Canvas(modifier) {
-        drawIntoCanvas { BrainPainter.draw(it.nativeCanvas, size.width, size.height, health, phase) }
-    }
-}
-
-@Composable
-fun MonsterArt(hp: Int, modifier: Modifier = Modifier) {
-    val phase = rememberPhase(2000)
-    Canvas(modifier) {
-        drawIntoCanvas { BrainPainter.drawMonster(it.nativeCanvas, size.width, size.height, hp, phase) }
+        drawIntoCanvas { MeterPainter.draw(it.nativeCanvas, size.width, size.height, left) }
     }
 }
 
@@ -204,7 +180,7 @@ fun AppIcon(app: WatchedApp, size: Dp = 44.dp) {
 
 // ------------------------------------------------------------------ charts
 
-/** Reels per hour, 24 bars, like the Progress screen in the design. */
+/** Reels per hour, 24 bars. */
 @Composable
 fun HourlyChart(hourly: IntArray, modifier: Modifier = Modifier) {
     val max = (hourly.maxOrNull() ?: 0).coerceAtLeast(1)
@@ -228,17 +204,12 @@ fun HourlyChart(hourly: IntArray, modifier: Modifier = Modifier) {
                     drawLine(grid, Offset(0f, y), Offset(size.width, y), strokeWidth = 1f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 8f)))
                 }
-                val brush = Brush.verticalGradient(listOf(C.AccentLight, C.Accent, C.AccentDeep))
                 for (h in 0 until 24) {
                     val v = hourly[h]
                     val x = slot * h + (slot - barW) / 2f
                     val bh = if (v == 0) 4f else (size.height * v / top).coerceAtLeast(6f)
-                    val color = if (v == 0) C.Line else null
-                    if (color != null) {
-                        drawRoundRect(color, Offset(x, size.height - bh), Size(barW, bh), CornerRadius(barW / 2, barW / 2))
-                    } else {
-                        drawRoundRect(brush, Offset(x, size.height - bh), Size(barW, bh), CornerRadius(barW / 2, barW / 2))
-                    }
+                    val color = if (v == 0) C.Line else C.Accent
+                    drawRoundRect(color, Offset(x, size.height - bh), Size(barW, 4f.coerceAtLeast(bh)), CornerRadius(3f, 3f))
                 }
             }
         }
@@ -268,8 +239,8 @@ fun WeekChart(values: List<Int>, labels: List<String>, limit: Int, highlightLast
                 val color = when {
                     v == 0 -> C.Line
                     over -> C.Bad
-                    highlightLast && i == values.lastIndex -> C.Accent
-                    else -> C.AccentDeep.copy(alpha = 0.75f)
+                    highlightLast && i == values.lastIndex -> C.Mint
+                    else -> C.Accent
                 }
                 drawRoundRect(color, Offset(x, size.height - bh), Size(barW, bh), CornerRadius(10f, 10f))
             }
@@ -418,40 +389,34 @@ fun Dot(color: Color, size: Dp = 10.dp) {
     Box(Modifier.size(size).clip(CircleShape).background(color))
 }
 
-/** Bottom-bar icons drawn by hand: brain (You), crossed swords (Battle), bars (Progress). */
+/** Bottom-bar icons drawn by hand: phone with stop bar (Today), target (Goals), trend line (Insights). */
 @Composable
 fun NavGlyph(kind: Int, tint: Color, modifier: Modifier = Modifier.size(28.dp)) {
     Canvas(modifier) {
         val w = size.width
         val h = size.height
+        val sw = w * 0.09f
         when (kind) {
             0 -> {
-                val u = w / 2f * 0.85f
-                val cx = w / 2f
-                val cy = h / 2f
-                val lobes = listOf(
-                    Triple(-0.42f, -0.05f, 0.38f), Triple(-0.15f, -0.35f, 0.36f), Triple(0.18f, -0.36f, 0.36f),
-                    Triple(0.45f, -0.05f, 0.36f), Triple(0.25f, 0.22f, 0.36f), Triple(-0.22f, 0.22f, 0.36f),
-                    Triple(0f, 0f, 0.45f),
-                )
-                lobes.forEach { (x, y, r) -> drawCircle(tint, r * u, Offset(cx + x * u, cy + y * u)) }
-                drawCircle(C.Bg, 0.1f * u, Offset(cx - 0.2f * u, cy + 0.02f * u))
-                drawCircle(C.Bg, 0.1f * u, Offset(cx + 0.2f * u, cy + 0.02f * u))
+                drawRoundRect(tint, Offset(w * 0.3f, h * 0.08f), Size(w * 0.4f, h * 0.84f), CornerRadius(w * 0.09f, w * 0.09f), style = Stroke(sw))
+                drawLine(tint, Offset(w * 0.4f, h * 0.36f), Offset(w * 0.5f, h * 0.26f), sw, StrokeCap.Round)
+                drawLine(tint, Offset(w * 0.5f, h * 0.26f), Offset(w * 0.6f, h * 0.36f), sw, StrokeCap.Round)
+                drawLine(tint, Offset(w * 0.14f, h * 0.55f), Offset(w * 0.86f, h * 0.55f), sw * 1.4f, StrokeCap.Round)
             }
             1 -> {
-                val sw = w * 0.1f
-                drawLine(tint, Offset(w * 0.18f, h * 0.18f), Offset(w * 0.78f, h * 0.78f), sw, StrokeCap.Round)
-                drawLine(tint, Offset(w * 0.82f, h * 0.18f), Offset(w * 0.22f, h * 0.78f), sw, StrokeCap.Round)
-                drawLine(tint, Offset(w * 0.58f, h * 0.82f), Offset(w * 0.82f, h * 0.58f), sw, StrokeCap.Round)
-                drawLine(tint, Offset(w * 0.42f, h * 0.82f), Offset(w * 0.18f, h * 0.58f), sw, StrokeCap.Round)
+                drawCircle(tint, w * 0.4f, Offset(w / 2, h / 2), style = Stroke(sw))
+                drawCircle(tint, w * 0.24f, Offset(w / 2, h / 2), style = Stroke(sw))
+                drawCircle(tint, w * 0.08f, Offset(w / 2, h / 2))
             }
             else -> {
-                val bw = w * 0.2f
-                val base = h * 0.88f
-                drawRoundRect(tint, Offset(w * 0.12f, h * 0.5f), Size(bw, base - h * 0.5f), CornerRadius(3f, 3f))
-                drawRoundRect(tint, Offset(w * 0.4f, h * 0.15f), Size(bw, base - h * 0.15f), CornerRadius(3f, 3f))
-                drawRoundRect(tint, Offset(w * 0.68f, h * 0.38f), Size(bw, base - h * 0.38f), CornerRadius(3f, 3f))
-                drawLine(tint, Offset(w * 0.06f, base), Offset(w * 0.94f, base), w * 0.07f, StrokeCap.Round)
+                val path = Path().apply {
+                    moveTo(w * 0.1f, h * 0.75f)
+                    lineTo(w * 0.38f, h * 0.45f)
+                    lineTo(w * 0.58f, h * 0.62f)
+                    lineTo(w * 0.9f, h * 0.25f)
+                }
+                drawPath(path, tint, style = Stroke(sw, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawLine(tint, Offset(w * 0.08f, h * 0.9f), Offset(w * 0.92f, h * 0.9f), sw, StrokeCap.Round)
             }
         }
     }

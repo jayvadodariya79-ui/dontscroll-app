@@ -8,7 +8,7 @@ import android.os.PowerManager
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityEvent
 import com.jayv.dontscroll.data.Apps
-import com.jayv.dontscroll.data.Brain
+import com.jayv.dontscroll.data.Meter
 import com.jayv.dontscroll.data.Fmt
 import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.data.Repo
@@ -333,7 +333,7 @@ class ReelService : AccessibilityService() {
         val t = Repo.todayTotals()
         val reason = blockReason(app, t.reels, t.reelMs, now)
         if (reason != null) {
-            val health = Brain.health(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
+            val left = Meter.left(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
             val snoozes = Prefs.snoozesLeftToday
             val snoozeLabel = if (snoozes > 0) "${Prefs.snoozeMinutes} more minutes ($snoozes left today)" else null
             overlays.showBlock(
@@ -341,7 +341,7 @@ class ReelService : AccessibilityService() {
                 title = "Time to stop",
                 message = reason.second,
                 stats = "Today: ${t.reels} reels · ${Fmt.duration(t.reelMs)}",
-                health = health,
+                left = left,
                 snoozeLabel = snoozeLabel,
                 onLeave = { leavePlayer(app) },
                 onSnooze = {
@@ -374,7 +374,7 @@ class ReelService : AccessibilityService() {
 
         if (Prefs.liveCounter && overlays.pauseShowingFor == null) {
             val mine = t.reelsByApp[app.key] ?: 0
-            overlays.showBubble("🧠 ${t.reels}/${Prefs.reelLimit} reels · ${Fmt.duration(t.reelMs)}" +
+            overlays.showBubble("SwipeStop  ${t.reels}/${Prefs.reelLimit} · ${Fmt.duration(t.reelMs)}" +
                 if (mine != t.reels) "  ($mine here)" else "")
         } else {
             overlays.hideBubble()

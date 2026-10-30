@@ -9,12 +9,12 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.jayv.dontscroll.MainActivity
 import com.jayv.dontscroll.R
-import com.jayv.dontscroll.data.Brain
+import com.jayv.dontscroll.data.Meter
 import com.jayv.dontscroll.data.Fmt
 import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.data.Repo
 
-/** Home-screen widget: reels and time today, plus the brain meter. */
+/** Home-screen widget: reels and time today, plus budget left. */
 class TodayWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
@@ -32,7 +32,7 @@ class TodayWidget : AppWidgetProvider() {
 
         private fun render(context: Context, manager: AppWidgetManager, ids: IntArray) {
             val t = Repo.todayTotals()
-            val health = Brain.health(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
+            val left = Meter.left(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
             val open = PendingIntent.getActivity(
                 context, 0,
                 Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -42,7 +42,7 @@ class TodayWidget : AppWidgetProvider() {
                 val v = RemoteViews(context.packageName, R.layout.widget_today)
                 v.setTextViewText(R.id.w_reels, t.reels.toString())
                 v.setTextViewText(R.id.w_time, Fmt.duration(t.reelMs))
-                v.setTextViewText(R.id.w_brain, "Brain $health% · ${Brain.label(health)}")
+                v.setTextViewText(R.id.w_status, "$left% left · ${Meter.label(left)}")
                 v.setOnClickPendingIntent(R.id.w_root, open)
                 manager.updateAppWidget(id, v)
             }

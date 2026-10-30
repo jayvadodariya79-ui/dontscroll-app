@@ -42,7 +42,7 @@ import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.data.Repo
 import com.jayv.dontscroll.notify.Notifier
 import com.jayv.dontscroll.ui.Perms
-import com.jayv.dontscroll.ui.components.BrainArt
+import com.jayv.dontscroll.ui.components.MeterArt
 import com.jayv.dontscroll.ui.components.Panel
 import com.jayv.dontscroll.ui.components.PrimaryButton
 import com.jayv.dontscroll.ui.components.SecondaryButton
@@ -86,9 +86,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
 
         when (step) {
             0 -> {
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { BrainArt(100, Modifier.size(240.dp)) }
-                Title("Count every reel.\nTake your brain back.")
-                Body("DontScroll counts the Reels and Shorts you swipe on Instagram, YouTube, Snapchat and Facebook, shows what it does to your brain, and stops you at your limit.")
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { MeterArt(100, Modifier.size(220.dp)) }
+                Title("Every swipe counted.\nStop when you choose.")
+                Body("SwipeStop counts the Reels and Shorts you swipe on Instagram, YouTube, Snapchat and Facebook, shows the time they take, and stops the feed at the limit you set.")
                 Spacer(Modifier.height(10.dp))
                 Body("Free. No account. Nothing leaves your phone.")
                 Spacer(Modifier.height(28.dp))
@@ -98,7 +98,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 var v by remember { mutableFloatStateOf(Prefs.reelLimit.toFloat()) }
                 val limit = ((v / 5).toInt() * 5).coerceIn(5, 300)
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    BrainArt(if (limit <= 30) 100 else if (limit <= 80) 70 else 40, Modifier.size(170.dp))
+                    MeterArt(if (limit <= 30) 100 else if (limit <= 80) 60 else 30, Modifier.size(160.dp))
                 }
                 Title("Your daily reel budget")
                 Body("How many reels a day is okay for you? You can change this any time.")
@@ -120,9 +120,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
             }
             2 -> {
                 val enabled = Perms.accessibilityEnabled(ctx)
-                Title("Allow DontScroll to see Reels")
+                Title("Allow SwipeStop to see Reels")
                 Panel(padding = 18.dp) {
-                    Text("Why DontScroll needs Accessibility", fontWeight = FontWeight.Bold, color = C.Text, fontSize = 16.sp)
+                    Text("Why SwipeStop needs Accessibility", fontWeight = FontWeight.Bold, color = C.Text, fontSize = 16.sp)
                     Spacer(Modifier.height(8.dp))
                     Bullet("It notices when Instagram Reels, YouTube Shorts, Snapchat Spotlight or Facebook Reels are on your screen.")
                     Bullet("It counts each reel you swipe and the time you spend there.")
@@ -151,7 +151,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     PrimaryButton("Agree and open settings", enabled = agreed) { Perms.openAccessibility(ctx) }
                     Spacer(Modifier.height(10.dp))
-                    Body("In Settings: Installed apps → DontScroll → switch on. If it says \"Restricted setting\", open App info → ⋮ → Allow restricted settings, then try again.")
+                    Body("In Settings: Installed apps → SwipeStop → switch on. If it says \"Restricted setting\", open App info → ⋮ → Allow restricted settings, then try again.")
                     Spacer(Modifier.height(10.dp))
                     SecondaryButton("Open App info") { Perms.openAppInfo(ctx) }
                     Spacer(Modifier.height(10.dp))
@@ -160,7 +160,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
             }
             3 -> {
                 Title("Nightly summary")
-                Body("Get one notification each evening with your reels, time and brain score, and a heads-up when you hit your limit.")
+                Body("Get one notification each evening with your reels and time, and a heads-up when you hit your limit.")
                 Spacer(Modifier.height(28.dp))
                 if (Build.VERSION.SDK_INT >= 33 && !Notifier.canNotify(ctx)) {
                     PrimaryButton("Allow notifications") { notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }
@@ -177,7 +177,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 Panel(padding = 18.dp) {
                     Bullet("App info → Battery → Unrestricted.")
                     if (Perms.isSamsung) {
-                        Bullet("Settings → Battery → Background usage limits → Never auto sleeping apps → add DontScroll.")
+                        Bullet("Settings → Battery → Background usage limits → Never auto sleeping apps → add SwipeStop.")
                     } else {
                         Bullet("On Xiaomi, Vivo, Oppo or Realme also turn on Autostart.")
                     }
@@ -188,11 +188,11 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 SecondaryButton(if (Perms.ignoringBatteryOptimizations(ctx)) "Done ✓ Continue" else "Continue") { step = 5 }
             }
             else -> {
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { BrainArt(100, Modifier.size(200.dp)) }
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { MeterArt(100, Modifier.size(180.dp)) }
                 Title("You're ready")
                 Body("Open Instagram Reels or YouTube Shorts and swipe. The counter at the top shows it's working.")
                 Spacer(Modifier.height(10.dp))
-                Body("Fight the Scroll Monster every day in Battle and watch your progress in Progress.")
+                Body("Keep your streak going in Goals and see your patterns in Insights.")
                 Spacer(Modifier.height(28.dp))
                 PrimaryButton("Start") {
                     Notifier.scheduleSummary(ctx)

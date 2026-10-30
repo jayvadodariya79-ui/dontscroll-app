@@ -30,14 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jayv.dontscroll.data.Apps
-import com.jayv.dontscroll.data.Brain
+import com.jayv.dontscroll.data.Meter
 import com.jayv.dontscroll.data.Fmt
 import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.data.Repo
 import com.jayv.dontscroll.data.TodayTotals
 import com.jayv.dontscroll.ui.Perms
 import com.jayv.dontscroll.ui.components.AppIcon
-import com.jayv.dontscroll.ui.components.BrainArt
+import com.jayv.dontscroll.ui.components.MeterArt
 import com.jayv.dontscroll.ui.components.Divider
 import com.jayv.dontscroll.ui.components.NavRow
 import com.jayv.dontscroll.ui.components.Panel
@@ -52,7 +52,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 @Composable
-fun YouScreen(onOpen: (Route) -> Unit) {
+fun TodayScreen(onOpen: (Route) -> Unit) {
     val ctx = LocalContext.current
     val key = rememberRefreshKey()
     val totals by produceState(TodayTotals(0, 0, emptyMap(), emptyMap()), key) {
@@ -62,7 +62,7 @@ fun YouScreen(onOpen: (Route) -> Unit) {
     val running = Perms.trackerRunning()
     val limit = Prefs.reelLimit
     val timeLimit = Prefs.timeLimitMin
-    val health = Brain.health(totals.reels, totals.reelMs, limit, timeLimit)
+    val left = Meter.left(totals.reels, totals.reelMs, limit, timeLimit)
     val activeSchedule = Apps.all.firstNotNullOfOrNull { Prefs.activeSchedule(it.key, LocalDateTime.now()) }
 
     Column(
@@ -72,7 +72,7 @@ fun YouScreen(onOpen: (Route) -> Unit) {
             .padding(horizontal = 20.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("DontScroll", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = C.Text, modifier = Modifier.weight(1f))
+            Text("Today", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = C.Text, modifier = Modifier.weight(1f))
             IconButton(onClick = { onOpen(Route.Settings) }) {
                 Icon(Icons.Outlined.Settings, contentDescription = "Settings", tint = C.Text)
             }
@@ -87,8 +87,8 @@ fun YouScreen(onOpen: (Route) -> Unit) {
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    if (!enabled) "Turn on DontScroll in Accessibility so it can count your reels."
-                    else "Android stopped the tracker. Turn DontScroll off and on again in Accessibility, and set battery to Unrestricted.",
+                    if (!enabled) "Turn on SwipeStop in Accessibility so it can count your reels."
+                    else "Android stopped the tracker. Turn SwipeStop off and on again in Accessibility, and set battery to Unrestricted.",
                     fontSize = 14.sp, color = C.TextLo,
                 )
                 Spacer(Modifier.height(14.dp))
@@ -104,18 +104,18 @@ fun YouScreen(onOpen: (Route) -> Unit) {
 
         Spacer(Modifier.height(12.dp))
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            BrainArt(health, Modifier.size(230.dp))
+            MeterArt(left, Modifier.size(210.dp))
         }
         Text(
-            "$health%",
+            "$left% left",
             Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontSize = 44.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = healthColor(health),
+            color = leftColor(left),
         )
         Text(
-            Brain.label(health),
+            Meter.label(left),
             Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
@@ -124,7 +124,7 @@ fun YouScreen(onOpen: (Route) -> Unit) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            Brain.line(health),
+            Meter.line(left),
             Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             textAlign = TextAlign.Center,
             fontSize = 14.sp,
@@ -141,19 +141,19 @@ fun YouScreen(onOpen: (Route) -> Unit) {
             ProgressLine(totals.reels.toFloat() / limit.coerceAtLeast(1), if (totals.reels >= limit) C.Bad else C.Accent)
             if (timeLimit > 0) {
                 Spacer(Modifier.height(10.dp))
-                ProgressLine(totals.reelMs.toFloat() / (timeLimit * 60_000f), if (totals.reelMs >= timeLimit * 60_000L) C.Bad else C.AccentLight)
+                ProgressLine(totals.reelMs.toFloat() / (timeLimit * 60_000f), if (totals.reelMs >= timeLimit * 60_000L) C.Bad else C.Mint)
             }
             Spacer(Modifier.height(10.dp))
-            val left = (limit - totals.reels).coerceAtLeast(0)
+            val swipesLeft = (limit - totals.reels).coerceAtLeast(0)
             Text(
-                if (left > 0) "$left reels left before the limit screen" else "Limit reached for today",
+                if (swipesLeft > 0) "$swipesLeft swipes left before the stop screen" else "Limit reached for today",
                 fontSize = 13.sp, color = C.TextLo,
             )
         }
 
         if (activeSchedule != null) {
             Spacer(Modifier.height(12.dp))
-            Panel(color = C.Banner) {
+            Panel(color = C.Card2) {
                 Text("${activeSchedule.name} is on", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = C.Text)
                 Text("Reels and Shorts are blocked until ${Fmt.clock(activeSchedule.endMin)}.", fontSize = 14.sp, color = C.AccentLight)
             }
@@ -194,12 +194,11 @@ fun YouScreen(onOpen: (Route) -> Unit) {
     }
 }
 
-private val WarnPanel = Color(0xFF3A1D14)
+private val WarnPanel = Color(0xFF3A1730)
 
-fun healthColor(health: Int) = when {
-    health >= 80 -> C.Good
-    health >= 50 -> C.Accent
-    health >= 20 -> C.Warn
+fun leftColor(left: Int) = when {
+    left >= 50 -> C.Mint
+    left >= 20 -> C.Warn
     else -> C.Bad
 }
 

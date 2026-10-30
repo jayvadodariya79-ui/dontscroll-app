@@ -44,26 +44,29 @@ data class TodayTotals(
     val reelMsByApp: Map<String, Long>,
 )
 
-object Brain {
-    /** 100 = sharp, 0 = brain rot. Uses the stricter of the reel and time limits. */
-    fun health(reels: Int, reelMs: Long, reelLimit: Int, timeLimitMin: Int): Int {
+/** How much of today's budget is left, 100 = all of it, 0 = limit reached. */
+object Meter {
+    /** Uses the stricter of the reel and time limits. */
+    fun left(reels: Int, reelMs: Long, reelLimit: Int, timeLimitMin: Int): Int {
         val byReels = if (reelLimit > 0) 100 - reels * 100 / reelLimit else 100
         val byTime = if (timeLimitMin > 0) (100 - reelMs * 100 / (timeLimitMin * 60_000L)).toInt() else 100
         return minOf(byReels, byTime).coerceIn(0, 100)
     }
 
-    fun label(health: Int): String = when {
-        health >= 80 -> "Sharp"
-        health >= 50 -> "Okay"
-        health >= 20 -> "Foggy"
-        else -> "Brain rot"
+    fun label(left: Int): String = when {
+        left >= 80 -> "In control"
+        left >= 50 -> "On track"
+        left >= 20 -> "Slow down"
+        left > 0 -> "Almost out"
+        else -> "Limit reached"
     }
 
-    fun line(health: Int): String = when {
-        health >= 80 -> "Your brain feels great. Keep it that way."
-        health >= 50 -> "Doing okay. A few more reels and it gets foggy."
-        health >= 20 -> "Your brain is getting foggy. Time for a break."
-        else -> "Brain rot reached. Put the phone down for a bit."
+    fun line(left: Int): String = when {
+        left >= 80 -> "Plenty of swipes left. Spend them on purpose."
+        left >= 50 -> "You're on track. Keep an eye on the count."
+        left >= 20 -> "More than half used. A good moment to stop."
+        left > 0 -> "Only a few swipes left today."
+        else -> "You've used all of today's swipes."
     }
 }
 

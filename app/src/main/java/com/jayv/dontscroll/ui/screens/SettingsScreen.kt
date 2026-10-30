@@ -78,7 +78,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (Route) -> Unit) {
 
         SectionTitle("Notifications")
         Panel(padding = 16.dp) {
-            SwitchRow("Nightly summary", "Your reels and brain score each evening", Prefs.summaryEnabled) {
+            SwitchRow("Nightly summary", "Your reels and time each evening", Prefs.summaryEnabled) {
                 Prefs.summaryEnabled = it
                 Notifier.scheduleSummary(ctx)
             }
@@ -127,7 +127,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (Route) -> Unit) {
                         putExtra(Intent.EXTRA_STREAM, uri)
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
-                    ctx.startActivity(Intent.createChooser(send, "Export DontScroll data"))
+                    ctx.startActivity(Intent.createChooser(send, "Export SwipeStop data"))
                 } catch (e: Exception) {
                     Toast.makeText(ctx, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -141,7 +141,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (Route) -> Unit) {
             NavRow("Privacy & how it works") { onOpen(Route.About) }
         }
         Spacer(Modifier.height(12.dp))
-        Text("DontScroll 0.1.0 · free · no account · no internet", fontSize = 12.sp, color = C.TextDim, modifier = Modifier.padding(start = 4.dp))
+        Text("SwipeStop 0.2.0 · free · no account · no internet", fontSize = 12.sp, color = C.TextDim, modifier = Modifier.padding(start = 4.dp))
         Spacer(Modifier.height(28.dp))
     }
 

@@ -57,7 +57,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun ProgressScreen(onOpen: (Route) -> Unit) {
+fun InsightsScreen(onOpen: (Route) -> Unit) {
     val key = rememberRefreshKey()
     var day by remember { mutableStateOf(LocalDate.now()) }
     val today = LocalDate.now()
@@ -76,7 +76,7 @@ fun ProgressScreen(onOpen: (Route) -> Unit) {
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
-        Text("Progress", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = C.Text, modifier = Modifier.padding(top = 18.dp, bottom = 8.dp))
+        Text("Insights", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = C.Text, modifier = Modifier.padding(top = 18.dp, bottom = 8.dp))
 
         // Day switcher
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -108,28 +108,9 @@ fun ProgressScreen(onOpen: (Route) -> Unit) {
         }
 
         Spacer(Modifier.height(16.dp))
-        // Banner like the design, but blocking is free here.
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(C.Banner)
-                .clickable { onOpen(Route.Blocking) }
-                .padding(horizontal = 18.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                Modifier.clip(RoundedCornerShape(22.dp)).background(C.AccentLight).padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-                Text("FREE", fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = C.OnAccent)
-            }
-            Spacer(Modifier.width(14.dp))
-            Text("Block Shorts & Reels", Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = C.Text)
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = C.Text)
-        }
-
+        Spacer(Modifier.height(4.dp))
         Spacer(Modifier.height(10.dp))
-        SectionTitle("Top apps")
+        SectionTitle("By app")
         Panel(padding = 16.dp) {
             val apps = (s?.apps ?: Apps.all.map { com.jayv.dontscroll.data.AppStat(it, 0, 0, 0, 0) })
                 .sortedWith(compareByDescending<com.jayv.dontscroll.data.AppStat> { it.reels }.thenByDescending { it.reelMs })

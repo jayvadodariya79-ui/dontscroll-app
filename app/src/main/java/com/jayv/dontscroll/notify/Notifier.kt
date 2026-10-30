@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.jayv.dontscroll.MainActivity
 import com.jayv.dontscroll.R
-import com.jayv.dontscroll.data.Brain
+import com.jayv.dontscroll.data.Meter
 import com.jayv.dontscroll.data.Fmt
 import com.jayv.dontscroll.data.Prefs
 import com.jayv.dontscroll.data.Repo
@@ -33,7 +33,7 @@ object Notifier {
         val nm = ctx.getSystemService(NotificationManager::class.java) ?: return
         nm.createNotificationChannel(
             NotificationChannel(CH_SUMMARY, "Daily summary", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = "Your reels and brain score each evening"
+                description = "Your reels and time each evening"
             }
         )
         nm.createNotificationChannel(
@@ -60,9 +60,9 @@ object Notifier {
     fun showSummary(ctx: Context) {
         if (!canNotify(ctx)) return
         val t = Repo.todayTotals()
-        val health = Brain.health(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
-        val title = if (t.reels <= Prefs.reelLimit) "You beat the Scroll Monster today 💪" else "The Scroll Monster won today"
-        val body = "${t.reels} reels · ${Fmt.duration(t.reelMs)} in reels · Brain ${health}% (${Brain.label(health)})"
+        val left = Meter.left(t.reels, t.reelMs, Prefs.reelLimit, Prefs.timeLimitMin)
+        val title = if (t.reels <= Prefs.reelLimit) "You stayed under your limit today" else "Over your limit today"
+        val body = "${t.reels} reels · ${Fmt.duration(t.reelMs)} in reels · ${left}% of today's budget left"
         val n = NotificationCompat.Builder(ctx, CH_SUMMARY)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)

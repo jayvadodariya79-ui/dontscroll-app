@@ -4,35 +4,22 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Brain body: overlapping circles -->
+    <!-- Phone body -->
     <path
-        android:fillColor="#FF9EB8"
-        android:pathData="M33.2,54.7a9.88,9.88 0 1,0 19.76,0a9.88,9.88 0 1,0 -19.76,0
-            M40.74,46.9a9.36,9.36 0 1,0 18.72,0a9.36,9.36 0 1,0 -18.72,0
-            M49.32,46.64a9.36,9.36 0 1,0 18.72,0a9.36,9.36 0 1,0 -18.72,0
-            M56.34,54.7a9.36,9.36 0 1,0 18.72,0a9.36,9.36 0 1,0 -18.72,0
-            M51.14,61.72a9.36,9.36 0 1,0 18.72,0a9.36,9.36 0 1,0 -18.72,0
-            M38.92,61.72a9.36,9.36 0 1,0 18.72,0a9.36,9.36 0 1,0 -18.72,0
-            M42.3,56a11.7,11.7 0 1,0 23.4,0a11.7,11.7 0 1,0 -23.4,0" />
-    <!-- Folds -->
+        android:fillColor="#2A1F45"
+        android:strokeColor="#A78BFA"
+        android:strokeWidth="2.6"
+        android:pathData="M45,30 L63,30 Q69,30 69,36 L69,72 Q69,78 63,78 L45,78 Q39,78 39,72 L39,36 Q39,30 45,30 Z" />
+    <!-- Swipe-up chevron -->
     <path
         android:fillColor="#00000000"
-        android:strokeColor="#E0708F"
-        android:strokeWidth="1.6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.6"
         android:strokeLineCap="round"
-        android:pathData="M54,39.5 Q51,43.5 54,47 M41,50 Q44,52 43.5,55.5 M67,50 Q64,52 64.5,55.5" />
-    <!-- Eyes -->
+        android:strokeLineJoin="round"
+        android:pathData="M47.5,46 L54,39.5 L60.5,46" />
+    <!-- Stop bar -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M46.2,57.3a2.6,2.6 0 1,0 5.2,0a2.6,2.6 0 1,0 -5.2,0 M56.6,57.3a2.6,2.6 0 1,0 5.2,0a2.6,2.6 0 1,0 -5.2,0" />
-    <path
-        android:fillColor="#2A1A14"
-        android:pathData="M48,57.8a1.3,1.3 0 1,0 2.6,0a1.3,1.3 0 1,0 -2.6,0 M58.4,57.8a1.3,1.3 0 1,0 2.6,0a1.3,1.3 0 1,0 -2.6,0" />
-    <!-- Smile -->
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#2A1A14"
-        android:strokeWidth="1.6"
-        android:strokeLineCap="round"
-        android:pathData="M50.6,62.6 Q54,65.6 57.4,62.6" />
+        android:fillColor="#5EEAD4"
+        android:pathData="M34.5,52 L73.5,52 Q76.5,52 76.5,55 Q76.5,58 73.5,58 L34.5,58 Q31.5,58 31.5,55 Q31.5,52 34.5,52 Z" />
 </vector>

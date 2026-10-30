@@ -17,26 +17,26 @@ enum class Challenge(val id: String, val title: String, val desc: String, val xp
 
 enum class Outcome { IN_PROGRESS, DONE, FAILED }
 
-enum class BattleResult { FIGHTING, WON, LOST, NOT_TRACKED }
+enum class GoalResult { TODAY, WON, LOST, NOT_TRACKED }
 
-data class BattleDay(
+data class GoalDay(
     val day: LocalDate,
     val reels: Int,
     val reelMs: Long,
     val budget: Int,
-    val result: BattleResult,
+    val result: GoalResult,
     val challenge: Challenge?,
     val challengeOutcome: Outcome?,
 )
 
 data class Level(val number: Int, val name: String, val minXp: Int, val nextXp: Int?)
 
-data class BattleOverview(
-    val today: BattleDay,
+data class GoalsOverview(
+    val today: GoalDay,
     val todayStats: DayStats,
-    val youHp: Int,
-    val monsterHp: Int,
-    val last7: List<BattleDay>,
+    /** Percent of today's reel budget still left. */
+    val budgetLeft: Int,
+    val last7: List<GoalDay>,
     val streak: Int,
     val bestStreak: Int,
     val wins: Int,
@@ -45,16 +45,16 @@ data class BattleOverview(
     val level: Level,
 )
 
-object BattleEngine {
+object GoalsEngine {
     const val WIN_XP = 25
 
     private val levels = listOf(
-        0 to "Rookie",
-        100 to "Focused",
-        250 to "Disciplined",
-        500 to "Monk Mode",
-        900 to "Legend",
-        1500 to "Brain Master",
+        0 to "Starter",
+        100 to "Steady",
+        250 to "Focused",
+        500 to "Disciplined",
+        900 to "Unstoppable",
+        1500 to "Master",
     )
 
     fun level(xp: Int): Level {
@@ -86,15 +86,15 @@ object BattleEngine {
         }
     }
 
-    private fun result(reels: Int, budget: Int, tracked: Boolean, isToday: Boolean): BattleResult = when {
-        reels > budget -> BattleResult.LOST
-        isToday -> BattleResult.FIGHTING
-        !tracked -> BattleResult.NOT_TRACKED
-        else -> BattleResult.WON
+    private fun result(reels: Int, budget: Int, tracked: Boolean, isToday: Boolean): GoalResult = when {
+        reels > budget -> GoalResult.LOST
+        isToday -> GoalResult.TODAY
+        !tracked -> GoalResult.NOT_TRACKED
+        else -> GoalResult.WON
     }
 
-    /** Builds the whole Battle tab from local data. Looks back up to a year. */
-    fun overview(now: LocalDateTime = LocalDateTime.now()): BattleOverview {
+    /** Builds the whole Goals tab from local data. Looks back up to a year. */
+    fun overview(now: LocalDateTime = LocalDateTime.now()): GoalsOverview {
         val today = now.toLocalDate()
         val first = Repo.firstTrackedDay() ?: today
         val start = maxOf(first, today.minusDays(364))
@@ -111,7 +111,7 @@ object BattleEngine {
             val outcome = if (ch != null && (tracked || isToday)) {
                 challengeOutcome(ch, Repo.dayStats(s.day), budget, isToday, now)
             } else null
-            BattleDay(s.day, s.reels, s.reelMs, budget, result(s.reels, budget, tracked, isToday), ch, outcome)
+            GoalDay(s.day, s.reels, s.reelMs, budget, result(s.reels, budget, tracked, isToday), ch, outcome)
         }
 
         // Streak: wins in a row ending yesterday, plus today while it is not lost.
@@ -119,33 +119,30 @@ object BattleEngine {
         for (i in days.indices.reversed()) {
             val d = days[i]
             if (d.day == today) {
-                if (d.result == BattleResult.LOST) break else continue
+                if (d.result == GoalResult.LOST) break else continue
             }
-            if (d.result == BattleResult.WON) streak++ else break
+            if (d.result == GoalResult.WON) streak++ else break
         }
         var best = 0
         var run = 0
         for (d in days) {
-            if (d.result == BattleResult.WON) { run++; best = maxOf(best, run) }
+            if (d.result == GoalResult.WON) { run++; best = maxOf(best, run) }
             else if (d.day != today) run = 0
         }
         best = maxOf(best, streak)
 
-        val wins = days.count { it.result == BattleResult.WON }
-        val losses = days.count { it.result == BattleResult.LOST }
+        val wins = days.count { it.result == GoalResult.WON }
+        val losses = days.count { it.result == GoalResult.LOST }
         val xp = days.sumOf { d ->
-            (if (d.result == BattleResult.WON) WIN_XP else 0) +
+            (if (d.result == GoalResult.WON) WIN_XP else 0) +
                 (if (d.challengeOutcome == Outcome.DONE) d.challenge?.xp ?: 0 else 0)
         }
 
         val todayDay = days.last()
         val todayStats = Repo.dayStats(today)
         val budget = Prefs.reelLimit.coerceAtLeast(1)
-        val youHp = if (todayDay.result == BattleResult.LOST) 0
+        val budgetLeft = if (todayDay.result == GoalResult.LOST) 0
         else (100 - todayDay.reels * 100 / budget).coerceIn(0, 100)
-        val minutesPassed = now.hour * 60 + now.minute
-        val monsterHp = if (todayDay.result == BattleResult.LOST) 100
-        else (100 - minutesPassed * 100 / (24 * 60)).coerceIn(1, 100)
 
         val last7 = days.takeLast(7).let { list ->
             if (list.size >= 7) list
@@ -153,17 +150,16 @@ object BattleEngine {
                 val missing = 7 - list.size
                 val pad = (missing downTo 1).map { i ->
                     val d = list.first().day.minusDays(i.toLong())
-                    BattleDay(d, 0, 0, budget, BattleResult.NOT_TRACKED, null, null)
+                    GoalDay(d, 0, 0, budget, GoalResult.NOT_TRACKED, null, null)
                 }
                 pad + list
             }
         }
 
-        return BattleOverview(
+        return GoalsOverview(
             today = todayDay,
             todayStats = todayStats,
-            youHp = youHp,
-            monsterHp = monsterHp,
+            budgetLeft = budgetLeft,
             last7 = last7,
             streak = streak,
             bestStreak = best,

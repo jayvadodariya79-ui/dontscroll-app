@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_bg">#1B1714</color>
-    <color name="app_bg">#0A0A09</color>
-    <color name="widget_text">#F5F1EA</color>
-    <color name="widget_text_lo">#A39E95</color>
-    <color name="widget_accent">#FFB067</color>
+    <color name="ic_bg">#130E22</color>
+    <color name="app_bg">#130E22</color>
+    <color name="widget_text">#F3F0FF</color>
+    <color name="widget_text_lo">#A9A1C4</color>
+    <color name="widget_accent">#A78BFA</color>
 </resources>
