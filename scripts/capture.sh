@@ -46,6 +46,8 @@ shot() { sleep 2; adb exec-out screencap -p > "$OUT/$1.png"; log "shot $1"; }
 top() { for i in 1 2 3; do adb shell input swipe $((W/2)) $((H*3/10)) $((W/2)) $((H*8/10)) 200; done; sleep 1; }
 
 adb install -r app/build/outputs/apk/debug/app-debug.apk
+# Plain letter icons for every app in the screenshots (no third-party logos).
+adb shell pm uninstall --user 0 com.google.android.youtube || true
 
 # ---- 1. Consent video ----
 adb shell screenrecord --bit-rate 6000000 --time-limit 170 /sdcard/consent.mp4 &

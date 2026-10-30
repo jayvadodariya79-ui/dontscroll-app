@@ -19,6 +19,6 @@ for n in root.iter("node"):
         continue
     x1, y1, x2, y2 = map(int, m)
     cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
-    if 0 < cx < W and 120 < cy < H - 140 and x2 > x1 and y2 > y1:
+    if 0 < cx < W and 100 < cy < H - 40 and x2 > x1 and y2 > y1:
         print(cx, cy)
         break
