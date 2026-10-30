@@ -141,7 +141,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (Route) -> Unit) {
             NavRow("Privacy & how it works") { onOpen(Route.About) }
         }
         Spacer(Modifier.height(12.dp))
-        Text("SwipeStop 0.2.0 · free · no account · no internet", fontSize = 12.sp, color = C.TextDim, modifier = Modifier.padding(start = 4.dp))
+        Text("SwipeStop 1.0.0 · free · no account · no internet", fontSize = 12.sp, color = C.TextDim, modifier = Modifier.padding(start = 4.dp))
         Spacer(Modifier.height(28.dp))
     }
 
