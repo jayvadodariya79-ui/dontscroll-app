@@ -67,6 +67,15 @@ object Repo {
         }
     }
 
+    /** Re-reads today's totals from the database, e.g. after data was written outside Repo. */
+    @Synchronized
+    fun reload() {
+        pendingReelMs.clear(); pendingAppMs.clear(); pendingSessions.clear()
+        today = LocalDate.now()
+        loadToday()
+        bump()
+    }
+
     /** Call often; handles midnight. Returns true when the day changed. */
     @Synchronized
     fun ensureToday(): Boolean {
