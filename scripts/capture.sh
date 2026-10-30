@@ -58,10 +58,12 @@ sleep 5                                   # time to read the disclosure
 shot onboarding-disclosure
 tap "I understand and agree"
 tap "Agree and open settings"
-sleep 2
+sleep 3
+ui; cp /tmp/ui.xml $OUT/dbg-settings-1.xml; adb exec-out screencap -p > $OUT/dbg-settings-1.png
 tap "SwipeStop reel tracker"
 sleep 2
 tap "re:Use SwipeStop reel tracker|SwipeStop reel tracker shortcut|Use service" || true
+ui; cp /tmp/ui.xml $OUT/dbg-settings-2.xml
 tap "Allow"
 sleep 3
 shot settings-enabled
@@ -74,12 +76,18 @@ tap "Start"
 sleep 4
 adb shell pkill -INT screenrecord; wait $REC 2>/dev/null; sleep 3
 adb pull /sdcard/consent.mp4 $OUT/consent.mp4
-adb shell dumpsys accessibility | grep -i swipestop | head -5
+SVC=$PKG/com.jayv.dontscroll.service.ReelService
+if ! adb shell settings get secure enabled_accessibility_services | grep -q ReelService; then
+  log "consent flow did not enable the service; enabling directly for screenshots"
+  adb shell settings put secure enabled_accessibility_services $SVC
+  adb shell settings put secure accessibility_enabled 1
+fi
+adb shell settings get secure enabled_accessibility_services
 
 # ---- 2. Sample data + screenshots ----
 adb shell am broadcast -a com.jayv.swipestop.DEMO_SEED -p $PKG
 sleep 3
-adb shell am start -n $ACT; sleep 3
+adb shell am start --activity-clear-task -n $ACT; sleep 4
 top; shot 01-today
 adb shell input swipe $((W/2)) $((H*7/10)) $((W/2)) $((H*3/10)) 600; shot 02-today-more
 tap "Insights" && { top; shot 03-insights; adb shell input swipe $((W/2)) $((H*7/10)) $((W/2)) $((H*3/10)) 600; shot 04-insights-more; }

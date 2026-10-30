@@ -1,5 +1,8 @@
 package com.jayv.dontscroll.ui.screens
 
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
+
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.BackHandler
@@ -140,10 +143,15 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     Spacer(Modifier.height(16.dp))
                     PrimaryButton("Continue") { step = 3 }
                 } else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .toggleable(value = agreed, role = Role.Checkbox, onValueChange = { agreed = it }),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         androidx.compose.material3.Checkbox(
                             checked = agreed,
-                            onCheckedChange = { agreed = it },
+                            onCheckedChange = null,
                             colors = androidx.compose.material3.CheckboxDefaults.colors(checkedColor = C.Accent, checkmarkColor = C.OnAccent),
                         )
                         Text("I understand and agree", color = C.Text, fontSize = 15.sp)
